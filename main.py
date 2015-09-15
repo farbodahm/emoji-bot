@@ -20,14 +20,14 @@ TOKEN = 'Your Bot Token'
 BASE_URL = 'https://api.telegram.org/bot' + TOKEN + '/'
 
 
-# ================================
+# start to connecting to telegram-bot-api
 
 class EnableStatus(ndb.Model):
     # key name: str(chat_id)
     enabled = ndb.BooleanProperty(indexed=False, default=False)
 
 
-# ================================
+# turn on bot if user send /start
 
 def setEnabled(chat_id, yes):
     es = EnableStatus.get_or_insert(str(chat_id))
@@ -41,7 +41,7 @@ def getEnabled(chat_id):
     return False
 
 
-# ================================
+# connecting to telegram webhook
 
 class MeHandler(webapp2.RequestHandler):
     def get(self):
@@ -62,7 +62,7 @@ class SetWebhookHandler(webapp2.RequestHandler):
         if url:
             self.response.write(json.dumps(json.load(urllib2.urlopen(BASE_URL + 'setWebhook', urllib.urlencode({'url': url})))))
 
-
+# get message,user-id and date for logging
 class WebhookHandler(webapp2.RequestHandler):
     def post(self):
         urlfetch.set_default_fetch_deadline(60)
@@ -70,7 +70,7 @@ class WebhookHandler(webapp2.RequestHandler):
         logging.info('request body:')
         logging.info(body)
         self.response.write(json.dumps(body))
-
+	
         update_id = body['update_id']
         message = body['message']
         message_id = message.get('message_id')
