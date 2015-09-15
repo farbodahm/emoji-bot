@@ -1,5 +1,5 @@
 #Emoji Bot
-Emoji Bot is a fun telegram bot that can entertain you for seconds.This bot run on Goole App Engine servers and 
+Emoji Bot is a fun telegram bot that can entertain you for seconds.This bot run on Google App Engine servers and 
 you can deploy it easily.
 This bot,can convert special words to emoji like (خودکشی,قدم-زدم) and ...
 It's sensitive to stickers that people send for it.
