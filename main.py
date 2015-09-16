@@ -5,13 +5,10 @@ import logging
 import random
 import urllib
 import urllib2
+#adding utf-8
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
-
-# for sending images
-from PIL import Image
-import multipart
 
 # standard app engine imports
 from google.appengine.api import urlfetch
@@ -23,14 +20,14 @@ TOKEN = '87689261:AAHTxPjkJawUDj6csNE3eEwGWLSWHWBDeDc'
 BASE_URL = 'https://api.telegram.org/bot' + TOKEN + '/'
 
 
-# ================================
+# start connecting to telegrom bot api
 
 class EnableStatus(ndb.Model):
     # key name: str(chat_id)
     enabled = ndb.BooleanProperty(indexed=False, default=False)
 
 
-# ================================
+# enable bot if user send /start
 
 def setEnabled(chat_id, yes):
     es = EnableStatus.get_or_insert(str(chat_id))
@@ -44,7 +41,7 @@ def getEnabled(chat_id):
     return False
 
 
-# ================================
+# get userid,text and date for logging and reply
 
 class MeHandler(webapp2.RequestHandler):
     def get(self):
