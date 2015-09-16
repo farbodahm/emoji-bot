@@ -102,6 +102,7 @@ class WebhookHandler(webapp2.RequestHandler):
 
             logging.info('send response:')
             logging.info(resp)
+        #a loop that send the reply only once
 	var = 2
 	if var == 2:
 		if sticker:
