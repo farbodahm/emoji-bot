@@ -5,29 +5,32 @@ import logging
 import random
 import urllib
 import urllib2
-#adding utf-8
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
+
+# for sending images
+from PIL import Image
+import multipart
 
 # standard app engine imports
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 import webapp2
 
-TOKEN = 'Your Bot Token'
+TOKEN = '87689261:AAHTxPjkJawUDj6csNE3eEwGWLSWHWBDeDc'
 
 BASE_URL = 'https://api.telegram.org/bot' + TOKEN + '/'
 
 
-# start to connecting to telegram-bot-api
+# ================================
 
 class EnableStatus(ndb.Model):
     # key name: str(chat_id)
     enabled = ndb.BooleanProperty(indexed=False, default=False)
 
 
-# turn on bot if user send /start
+# ================================
 
 def setEnabled(chat_id, yes):
     es = EnableStatus.get_or_insert(str(chat_id))
@@ -41,7 +44,7 @@ def getEnabled(chat_id):
     return False
 
 
-# connecting to telegram webhook
+# ================================
 
 class MeHandler(webapp2.RequestHandler):
     def get(self):
@@ -62,7 +65,7 @@ class SetWebhookHandler(webapp2.RequestHandler):
         if url:
             self.response.write(json.dumps(json.load(urllib2.urlopen(BASE_URL + 'setWebhook', urllib.urlencode({'url': url})))))
 
-# get message,user-id and date for logging
+
 class WebhookHandler(webapp2.RequestHandler):
     def post(self):
         urlfetch.set_default_fetch_deadline(60)
@@ -70,7 +73,7 @@ class WebhookHandler(webapp2.RequestHandler):
         logging.info('request body:')
         logging.info(body)
         self.response.write(json.dumps(body))
-	
+
         update_id = body['update_id']
         message = body['message']
         message_id = message.get('message_id')
@@ -102,154 +105,220 @@ class WebhookHandler(webapp2.RequestHandler):
 
             logging.info('send response:')
             logging.info(resp)
-	#a loop that send your message only once!
 	var = 2
 	if var == 2:
 		if sticker:
 	        	reply('من ایموجی بات هستم :) بنابراین نظری در مورد استیکر شما ندارم :)')
 			var = var -1
 			return
-
-	if text.startswith('/'):			
+	if True:			
 	    if text == '/start':
 		reply('بات روشن شد.لطفا برای به دست آوردن لیست اسامی ایموجی ها دستور /help رو برام بفرستید :)')
 		setEnabled(chat_id, True)
-	    if text == '/about':
-		reply('من ایموجی بات هستم و شما میتونید اسم ایموجی مورد نظرتون رو از لیست انتخاب کنید :) برای ارتباط با سازندم هم میتونید به @farbodgame پیام بدید :)')
+		return
 	    if text == '/help':
 		reply('شما میتونید اسم ایموجی مورد نظر خودتونو از لیست انتخاب کنید و برام بفرستید تا من بهتون جواب بدم: پوزخند,شادی,شکلک,خندان,خنده-شیرین,خنده,چشمک,لپ-گلی,چشمک,خوش-مزه,پکر,چشم-عاشق,لبخند-مغرورانه,بی-توجه,افسرده,سردرگم,بوس-فرستادن,فریاد-ترس,متعجب,سرخ,ماسکی,کسل,گربه-عاشق,دعا,گربه-ترسان,موشک,قطار,اتوبوس,کشتی,زمین,ماه,ستاره,حلزون,مار,اسب,میمون,هشت-پا,ناامید,عرق-سرد,عصبانی,گریه,رضایت,واقع-بین,مشت,دیس-لایک,لایک,دست-زدن,روح,قلب-تیرخورده,ادم-فضایی,قلب,حاله,خنده-شیطانی,بمب,عینک-افتابی,خنثی,گیج,زبان-درازی,نگران,قهقه,تفنگ.   ترکیبی ها: خودکشی,قدم-زدن,و...')
+		return
+	    if text == '/about':
+		reply('من ایموجی بات هستم و شما میتونید اسم ایموجی مورد نظرتون رو از لیست انتخاب کنید :) برای ارتباط با سازندم هم میتونید به @farbodgame پیام بدید :) سورس من هم روی گیتهاب منتشر شده و میتونید ازش استفاده کنید و لذت ببرید :) https://github.com/farbodgame/emoji-bot/')
+		return
 	
         # CUSTOMIZE FROM HERE
-	elif text == 'سلام'.strip():
+	if text == 'سلام'.strip():
 		reply('سلام :)')
-	elif text == 'خداحافط'.strip():
-		reply('خداحافظ')       
-	elif text == 'پوزخند'.strip():
+		return
+	if text == 'خداحافظ'.strip():
+		reply('خداحافظ')
+		return       
+	if text == 'پوزخند'.strip():
 		reply(u'\U0001f601')
-	elif text == 'شادی'.strip():
+		return
+	if text == 'شادی'.strip():
 		reply(u'\U0001f602')
-	elif text == 'شکلک'.strip():
+		return
+	if text == 'شکلک'.strip():
 		reply(u'\U0001f603')
-	elif text == 'خندان'.strip():
+		return
+	if text == 'خندان'.strip():
 		reply(u'\U0001f604')
-	elif text == 'خنده-شیرین'.strip():
+		return
+	if text == 'خنده-شیرین'.strip():
 		reply(u'\U0001f605')
-	elif text == 'خنده'.strip():
+		return
+	if text == 'خنده'.strip():
 		reply(u'\U0001f606')
-	elif text == 'چشمک'.strip():
+		return
+	if text == 'چشمک'.strip():
 		reply(u'\U0001f609')
-	elif text == 'لپ-گلی'.strip():
+		return
+	if text == 'لپ-گلی'.strip():
 		reply(u'\U0001f60A')
-	elif text == 'خوشمزه'.strip():
+		return
+	if text == 'خوشمزه'.strip():
 		reply(u'\U0001f60B')
-	elif text == 'پکر'.strip():
+		return
+	if text == 'پکر'.strip():
 		reply(u'\U0001f60C')
-	elif text == 'چشم-عاشق'.strip():
+		return
+	if text == 'چشم-عاشق'.strip():
 		reply(u'\U0001f60D')
-	elif text == 'لبخند-مغرورانه'.strip():
+		return
+	if text == 'لبخند-مغرورانه'.strip():
 		reply(u'\U0001f60F')
-	elif text == 'افسرده'.strip():
+		return
+	if text == 'افسرده'.strip():
 		reply(u'\U0001f614')
-	elif text == 'بی-توجه'.strip():
+		return
+	if text == 'بی-توجه'.strip():
 		reply(u'\U0001f612')
-	elif text == 'سردرگم'.strip():
+		return
+	if text == 'سردرگم'.strip():
 		reply(u'\U0001f616')
-	elif text == 'بوس-فرستادن'.strip():
+		return
+	if text == 'بوس-فرستادن'.strip():
 		reply(u'\U0001f618')
-	elif text == 'سرخ'.strip():
+		return
+	if text == 'سرخ'.strip():
 		reply(u'\U0001f633')
-	elif text == 'فریاد-ترس'.strip():
+		return
+	if text == 'فریاد-ترس'.strip():
 		reply(u'\U0001f631')
-	elif text == 'متعجب'.strip():
+		return
+	if text == 'متعجب'.strip():
 		reply(u'\U0001f632')
-	elif text == 'ماسک'.strip():
+		return
+	if text == 'ماسک'.strip():
 		reply(u'\U0001f637')
-	elif text == 'کسل'.strip():
+		return
+	if text == 'کسل'.strip():
 		reply(u'\U0001f629')
-	elif text == 'گربه-عاشق'.strip():
+		return
+	if text == 'گربه-عاشق'.strip():
 		reply(u'\U0001f63B')
-	elif text == 'دعا'.strip():
+		return
+	if text == 'دعا'.strip():
 		reply(u'\U0001f64F')
-	elif text == 'گربه-ترسان'.strip():
+		return
+	if text == 'گربه-ترسان'.strip():
 		reply(u'\U0001f640')
-	elif text == 'موشک'.strip():
+		return
+	if text == 'موشک'.strip():
 		reply(u'\U0001f680')
-	elif text == 'قطار'.strip():
+		return
+	if text == 'قطار'.strip():
 		reply(u'\U0001f684')
-	elif text == 'اتوبوس'.strip():
+		return
+	if text == 'اتوبوس'.strip():
 		reply(u'\U0001f68C')
-	elif text == 'کشتی'.strip():
+		return
+	if text == 'کشتی'.strip():
 		reply(u'\U0001f6A2')
-	elif text == 'زمین'.strip():
+		return
+	if text == 'زمین'.strip():
 		reply(u'\U0001f30f')
-	elif text == 'ماه'.strip():
+		return
+	if text == 'ماه'.strip():
 		reply(u'\U0001f319')
-	elif text == 'ستاره'.strip():
+		return
+	if text == 'ستاره'.strip():
 		reply(u'\U0001f31F')
-	elif text == 'حلزون'.strip():
+		return
+	if text == 'حلزون'.strip():
 		reply(u'\U0001f40C')
-	elif text == 'مار'.strip():
+		return
+	if text == 'مار'.strip():
 		reply(u'\U0001f40D')
-	elif text == 'اسب'.strip():
+		return
+	if text == 'اسب'.strip():
 		reply(u'\U0001f40E')
-	elif text == 'میمون'.strip():
+		return
+	if text == 'میمون'.strip():
 		reply(u'\U0001f412')
-	elif text == 'هشت-پا'.strip():
+		return
+	if text == 'هشت-پا'.strip():
 		reply(u'\U0001f419')
-	elif text == 'ناامید'.strip():
+		return
+	if text == 'ناامید'.strip():
 		reply(u'\U0001f61E')
-	elif text == 'عرق-سرد'.strip():
+		return
+	if text == 'عرق-سرد'.strip():
 		reply(u'\U0001f630')
-	elif text == 'عصبانی'.strip():
+		return
+	if text == 'عصبانی'.strip():
 		reply(u'\U0001f621')
-	elif text == 'گریه'.strip():
+		return
+	if text == 'گریه'.strip():
 		reply(u'\U0001f622')
-	elif text == 'رضایت'.strip():
+		return
+	if text == 'رضایت'.strip():
 		reply(u'\U0001f623')
-	elif text == 'واقع-بین'.strip():
+		return
+	if text == 'واقع-بین'.strip():
 		reply(u'\U0001f625')
-	elif text == 'مشت'.strip():
+		return
+	if text == 'مشت'.strip():
 		reply(u'\U0001f44A')
-	elif text == 'دیس-لایک'.strip():
+		return
+	if text == 'دیس-لایک'.strip():
 		reply(u'\U0001f44E')
-	elif text == 'لایک'.strip():
+		return
+	if text == 'لایک'.strip():
 		reply(u'\U0001f44D')
-	elif text == 'دست-زدن'.strip():
+		return
+	if text == 'دست-زدن'.strip():
 		reply(u'\U0001f44F')
-	elif text == 'روح'.strip():
+		return
+	if text == 'روح'.strip():
 		reply(u'\U0001f47B')
-	elif text == 'قلب-تیرخورده'.strip():
+		return
+	if text == 'قلب-تیرخورده'.strip():
 		reply(u'\U0001f498')
-	elif text == 'قلب'.strip():
+		return
+	if text == 'قلب'.strip():
 		reply(u'\U0001f493')
-	elif text == 'ادم-فضایی'.strip():
+		return
+	if text == 'ادم-فضایی'.strip():
 		reply(u'\U0001f47D')
-	elif text == 'حاله'.strip():
+		return
+	if text == 'حاله'.strip():
 		reply(u'\U0001f607')
-	elif text == 'خنده-شیطانی'.strip():
+		return
+	if text == 'خنده-شیطانی'.strip():
 		reply(u'\U0001f608')
-	elif text == 'بمب'.strip():
+		return
+	if text == 'بمب'.strip():
 		reply(u'\U0001f4A3')
-	elif text == 'عینک-افتابی'.strip():
+		return
+	if text == 'عینک-افتابی'.strip():
 		reply(u'\U0001f60E')
-	elif text == 'ترسان'.strip():
+		return
+	if text == 'ترسان'.strip():
 		reply(u'\U0001f628')
-	elif text == 'خنثی'.strip():
+		return
+	if text == 'خنثی'.strip():
 		reply(u'\U0001f610')
-	elif text == 'گیج'.strip():
+		return
+	if text == 'گیج'.strip():
 		reply(u'\U0001f615')
-	elif text == 'زبان-درازی'.strip():
+		return
+	if text == 'زبان-درازی'.strip():
 		reply(u'\U0001f61B')
-	elif text == 'نگران'.strip():
+		return
+	if text == 'نگران'.strip():
 		reply(u'\U0001f61F')
-	elif text == 'قهقه'.strip():
+		return
+	if text == 'قهقه'.strip():
 		reply(u'\U0001f62D')
-	elif text == 'تفنگ'.strip():
+		return
+	if text == 'تفنگ'.strip():
 		reply(u'\U0001f52B')
-	elif text == 'خودکشی'.strip():
+		return
+	if text == 'خودکشی'.strip():
 		reply(u'\U0001f610'u'\U0001f52B')
-	elif text == 'قدم-زدن'.strip():
-		reply(u'\U0001f60e\u2615\ufe0f\U0001f463')								
+		return
+	if text == 'قدم-زدن'.strip():
+		reply(u'\U0001f60e\u2615\ufe0f\U0001f463')
+		return								
 	else:
 		reply('لطفا نام ایموجی بعدی مورد نظر خود را درست وارد کنید.')
 				
