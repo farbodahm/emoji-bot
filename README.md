@@ -3,6 +3,7 @@ Emoji Bot is a fun telegram bot that can entertain you for seconds.This bot run 
 you can deploy it easily.
 This bot,can convert special words to emoji like (خودکشی,قدم-زدم) and ...
 It's sensitive to stickers that people send for it.
+Say `/joke` or `جک` to send you persian jokes.
 You can talk to it right now in telegram web version:
 http://telegram.me/my_emoji_bot and for other version's you can use this id: @my_emoji_bot
 
