@@ -46,6 +46,30 @@ def getEnabled(chat_id):
     return False
 
 
+def edit_distance(str1, str2):
+    if len(str1) == 0:
+        return len(str2)
+    elif len(str2) == 0:
+        return len(str1)
+    m = len(str1) + 1
+    n = len(str2) + 1
+    d = []
+    for i in range(m):
+        d += [n*[0]]
+    for i in range(0, m):
+        d[i][0] = i
+    for j in range(0, n):
+        d[0][j] = j
+    for i in range(1, m):
+        for j in range(1, n):
+            d[i][j] = min(
+                1+d[i-1][j],
+                1+d[i][j-1],
+                d[i-1][j-1] + (1 if str1[i-1] != str2[j-1] else 0)
+            )
+    return d[m-1][n-1]
+
+
 # get userid,text and date for logging and reply
 
 class MeHandler(webapp2.RequestHandler):
@@ -221,6 +245,7 @@ class WebhookHandler(webapp2.RequestHandler):
         if sticker:
             reply(chat_id, message_id, 'من ایموجی بات هستم :) بنابراین نظری در مورد استیکر شما ندارم :)')
         else:
+            text = text.strip()
             logging.info(text.decode('utf-8'))
 
             if text in self.actions:
@@ -230,7 +255,22 @@ class WebhookHandler(webapp2.RequestHandler):
             elif text in self.emojis:
                 reply(chat_id, message_id, self.emojis[text])
             else:
-                reply(chat_id, message_id, 'لطفا نام ایموجی بعدی مورد نظر خود را درست وارد کنید.')
+                min_distance = len(text) + 1
+                min_distance_word = ''
+                for word in self.emojis:
+                    dist = edit_distance(text, word)
+                    if dist > max(len(word), len(text)) * 0.75:  # Age kheyli fargh dashte bashan ehtemalan ghalat typi nist
+                        del dist
+                    else:
+                        if min_distance > dist:
+                            min_distance = dist
+                            min_distance_word = word
+
+                if len(min_distance_word) > 0:
+                    reply(chat_id, message_id, 'آیا منظورتان {} بود؟'.format(min_distance_word))
+                    reply(chat_id, message_id, self.emojis[min_distance_word])
+                else:
+                    reply(chat_id, message_id, 'لطفا نام ایموجی بعدی مورد نظر خود را درست وارد کنید.')
 
     def action_joke(self, **kwargs):
         reply(kwargs['chat_id'], kwargs['message_id'], random.choice(self.jokes))
